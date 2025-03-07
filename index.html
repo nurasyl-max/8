@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>С 8 марта, дорогая!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #D0E6F7, #F7E8D0);
+      overflow-x: hidden;
+      color: #333;
+    }
+
+    /* Прелоадер */
+    #preloader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #F7E8D0 url('https://i.imgur.com/ZKMnXce.png') center/40% no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #EEE;
+      border-top: 5px solid #A8D0E6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Навигация */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      z-index: 999;
+      backdrop-filter: blur(10px);
+    }
+    nav a {
+      text-decoration: none;
+      color: #5C4D7D;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #F76C6C; }
+
+    /* Лендинг секция */
+    section.landing {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+      background: url('https://i.imgur.com/9p8fB4x.png') center/cover;
+      overflow: hidden;
+    }
+    section.landing::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(240,230,210,0.3) 0%, rgba(200,220,240,0.3) 100%);
+    }
+    section.landing h1 {
+      font-size: 3em;
+      color: #5C4D7D;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      z-index: 1;
+    }
+
+    /* Облака */
+    .cloud {
+      position: absolute;
+      background: url('https://i.imgur.com/ZKMnXce.png') no-repeat center/contain;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+      animation: float 25s linear infinite;
+      z-index: 0;
+    }
+    .cloud1 { width: 150px; height: 80px; top: 10%; left: -20%; }
+    .cloud2 { width: 200px; height: 100px; top: 25%; left: -30%; animation-delay: 5s; }
+    .cloud3 { width: 180px; height: 90px; top: 40%; left: -25%; animation-delay: 10s; }
+
+    /* Секции */
+    section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    section h2 {
+      font-size: 2.5em;
+      color: #5C4D7D;
+      margin-bottom: 20px;
+    }
+
+    /* Персонаж */
+    .character-img {
+      width: 200px;
+      cursor: pointer;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+
+    /* Кнопка сюрприза */
+    .surprise-btn {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: #A8D0E6;
+      color: #FFF;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 20px;
+    }
+    .surprise-btn:hover { background: #F76C6C; }
+
+    /* Модальное окно */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1100;
+    }
+    .modal-content {
+      background: #FFF;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+      width: 80%;
+    }
+
+    /* Анимации */
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes float { 0% { transform: translateX(-100%); } 100% { transform: translateX(100vw); } }
+    @keyframes twinkle { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      section.landing h1 { font-size: 2em; }
+      nav { flex-wrap: wrap; padding: 10px; }
+      .character-img { width: 150px; }
+    }
+
+    /* Скроллбар */
+    ::-webkit-scrollbar { width: 8px; background: #F7E8D0; }
+    ::-webkit-scrollbar-thumb { background: #A8D0E6; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="preloader"><div class="spinner"></div></div>
+  
+  <nav>
+    <a href="#landing">Главная</a>
+    <a href="#message">Поздравление</a>
+    <a href="#character">Персонаж</a>
+    <a href="#surprise">Сюрприз</a>
+  </nav>
+
+  <section class="landing" id="landing">
+    <h1>С 8 марта, дорогая!</h1>
+    <p>Пусть каждый день будет наполнен магией Studio Ghibli</p>
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+  </section>
+
+  <section class="message" id="message">
+    <h2>Волшебные пожелания</h2>
+    <p>Как героиня Хаула, пусть преодолеешь все трудности. Как Тихиро - сохранишь доброе сердце. Как Софи - найдешь свою любовь!</p>
+  </section>
+
+  <section class="character" id="character">
+    <h2>Наш Тотеморо</h2>
+    <img src="https://i.imgur.com/3jKb5Qp.png" alt="Ghibli Character" class="character-img" id="characterImg">
+  </section>
+
+  <section class="surprise" id="surprise">
+    <h2>Магия музыки</h2>
+    <button class="surprise-btn" onclick="triggerSurprise()">Включить волшебство</button>
+  </section>
+
+  <footer>
+    С любовью создано в стиле Ghibli © 2024
+    <div class="stars"></div>
+  </footer>
+
+  <canvas id="petalsCanvas"></canvas>
+  
+  <audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/audio/2024/03/05/audio_8f13209607.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="modal" id="characterModal">
+    <div class="modal-content">
+      <h3>С днём весны! 🌸</h3>
+      <p>Ты - настоящая принцесса Мононоке этого мира!</p>
+      <button class="close-modal" onclick="document.getElementById('characterModal').style.display = 'none'">Закрыть</button>
+    </div>
+  </div>
+
+  <script>
+    // Прелоадер
+    window.addEventListener('load', () => {
+      gsap.to("#preloader", {opacity: 0, duration: 1, onComplete: () => {
+        document.getElementById('preloader').style.display = 'none';
+      }});
+    });
+
+    // Анимация секций
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting) {
+          gsap.to(entry.target, {opacity: 1, y: 0, duration: 1});
+        }
+      });
+    });
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    // Лепестки
+    const canvas = document.getElementById('petalsCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    class Petal {
+      constructor() {
+        this.colors = ['#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff'];
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.size = Math.random() * 8 + 4;
+        this.speed = Math.random() * 1.5 + 0.5;
+        this.wind = Math.random() * 0.8 - 0.4;
+        this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+        this.angle = 0;
+      }
+      update() {
+        this.x += this.wind;
+        this.y += this.speed;
+        this.angle += this.wind * 0.1;
+        if(this.y > canvas.height) this.reset();
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.size, this.size*0.6, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const petals = Array.from({length: 100}, () => new Petal());
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(petal => {
+        petal.update();
+        petal.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Интерактивные частицы
+    document.addEventListener('mousemove', e => {
+      if(Math.random() > 0.8) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: fixed;
+          left: ${e.clientX}px;
+          top: ${e.clientY}px;
+          width: 6px;
+          height: 6px;
+          background: ${['#ffb3ba', '#bae1ff'][Math.floor(Math.random()*2)]};
+          border-radius: 50%;
+          pointer-events: none;
+          animation: twinkle 1s forwards;
+        `;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1000);
+      }
+    });
+
+    // Дополнительные функции
+    function triggerSurprise() {
+      const music = document.getElementById('bgMusic');
+      music[music.paused ? 'play' : 'pause']();
+      gsap.fromTo('.surprise-btn', 
+        {scale: 0.9}, 
+        {scale: 1.1, duration: 0.3, yoyo: true, repeat: 1}
+      );
+    }
+
+    // Анимация персонажа
+    gsap.to(".character-img", {
+      y: 20,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "power1.inOut"
+    });
+
+    document.getElementById('characterImg').addEventListener('click', () => {
+      document.getElementById('characterModal').style.display = 'flex';
+    });
+  </script>
+</body>
+</html>
